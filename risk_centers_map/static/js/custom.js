@@ -19,10 +19,11 @@ var riskManagement = {
                 const city_political_boundary = new google.maps.Polygon({
                     // paths: cauayan_poly_coords,
                     paths: cauayan_poly_coords,
-                    strokeColor: "#A85E32",
+                    strokeColor: "#3F4D4F",
                     strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#FFFF00"
+                    strokeWeight: 4,
+                    fillColor: "#FFFF00",
+                    fillOpacity: 0.0
                 });
                 city_political_boundary.setMap(riskManagement.riskMap);
             });
