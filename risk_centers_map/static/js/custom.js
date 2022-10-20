@@ -1,6 +1,7 @@
 var riskManagement = {
 
         riskMap: null,
+        base_url: "http://192.168.31.129:8000",
 
         markersList: {
             "evacuation_centers": [1, 2, 3, 4, 5],
@@ -13,7 +14,7 @@ var riskManagement = {
         },
 
         pullCityBoundaries: () => {
-            $.get("http://192.168.31.129:8000/api/boundaries/0", (data, textStatus, jqXHR) => {
+            $.get(riskManagement.base_url + "/api/boundaries/0", (data, textStatus, jqXHR) => {
                 const cauayan_poly_coords = data.coords_list
                 const city_political_boundary = new google.maps.Polygon({
                     // paths: cauayan_poly_coords,
@@ -48,8 +49,8 @@ var riskManagement = {
 
         createMarker: () => {
 
-            $.get("http://192.168.31.129:8000/api/markers/0", (data, textStatus, jqXHR) => {
-                markers_list_data = temp_data;
+            $.get( riskManagement.base_url + "/api/markers/0", (data, textStatus, jqXHR) => {
+                markers_list_data = data;
             
                 markers_list_keys = Object.keys(markers_list_data);
                 markers_list_keys.forEach((marker_ref_key) => {
@@ -65,7 +66,7 @@ var riskManagement = {
                         switch(marker_ref_key) {
                             case "evacuation_centers":
                                 var icon_param = {
-                                    url: "http://192.168.31.129:8000/static/icons/house.png", // url
+                                    url: riskManagement.base_url + "/static/icons/house.png", // url
                                     scaledSize: new google.maps.Size(30, 30), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
@@ -73,7 +74,7 @@ var riskManagement = {
                                 break;
                             case "pickup_points":
                                 var icon_param = {
-                                    url: "http://192.168.31.129:8000/static/icons/taxi.png", // url
+                                    url: riskManagement.base_url + "/static/icons/taxi.png", // url
                                     scaledSize: new google.maps.Size(30, 30), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
@@ -81,7 +82,7 @@ var riskManagement = {
                                 break;
                             case "facilities":
                                 var icon_param = {
-                                    url: "http://192.168.31.129:8000/static/icons/hospital.png", // url
+                                    url: riskManagement.base_url + "/static/icons/hospital.png", // url
                                     scaledSize: new google.maps.Size(30, 30), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
@@ -89,7 +90,7 @@ var riskManagement = {
                                 break;
                             default:
                                 var icon_param = {
-                                    url: "http://192.168.31.129:8000/static/icons/call.png", // url
+                                    url: riskManagement.base_url + "/static/icons/call.png", // url
                                     scaledSize: new google.maps.Size(30, 30), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
