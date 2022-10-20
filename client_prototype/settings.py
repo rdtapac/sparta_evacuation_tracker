@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'risk_centers_map.apps.RiskCentersMapConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [

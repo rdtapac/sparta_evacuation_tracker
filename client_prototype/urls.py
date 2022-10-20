@@ -18,5 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('risk_centers_map/', include('risk_centers_map.urls')),
+    path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
 ]
