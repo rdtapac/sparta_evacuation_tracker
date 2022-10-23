@@ -30,11 +30,6 @@ def boundaries(self, boundary_type):
 
     boundaries_model = BoundariesModel()
 
-    response = {
-        "response": "this is a response from boundaries"
-    }
-
-    if boundary_type == 0:
-        response = {"coords_list": boundaries_model.get_city_boundaries() }
+    response = {"data": boundaries_model.get_boundaries(boundary_type) }
 
     return JsonResponse(response)

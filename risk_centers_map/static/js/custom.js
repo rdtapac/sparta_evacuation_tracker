@@ -4,28 +4,58 @@ var riskManagement = {
         base_url: "http://192.168.31.129:8000",
 
         markersList: {
-            "evacuation_centers": [1, 2, 3, 4, 5],
+            "evacuation_centers": [],
             "pickup_points": [],
             "facilities": []
         },
+
+        brgyBoundariesList: [],
+        cauayanCityBoundaries: null,
 
         testAlert: (passed_id) => {
             alert('test alert:' + $(passed_id).attr('id'));
         },
 
         pullCityBoundaries: () => {
+            // riskManagement.cauayanCityBoundaries.setMap(null);
+            // riskManagement.cauayanCityBoundaries = null
+
             $.get(riskManagement.base_url + "/api/boundaries/0", (data, textStatus, jqXHR) => {
-                const cauayan_poly_coords = data.coords_list
+                const cauayan_poly_coords = data.data
                 const city_political_boundary = new google.maps.Polygon({
                     // paths: cauayan_poly_coords,
                     paths: cauayan_poly_coords,
                     strokeColor: "#3F4D4F",
                     strokeOpacity: 0.8,
-                    strokeWeight: 4,
+                    strokeWeight: 3,
                     fillColor: "#FFFF00",
                     fillOpacity: 0.0
                 });
+                riskManagement.cauayanCityBoundaries = city_political_boundary;
                 city_political_boundary.setMap(riskManagement.riskMap);
+            });
+        },
+
+        pullBarangayBoundaries: () => {
+            $.get(riskManagement.base_url + "/api/boundaries/1", (data, textStatus, jqXHR) => {
+                brgy_list = data.data;
+                for (let i = 0; i < brgy_list.length; i++) {
+                    brgy_list_elem = brgy_list[i]
+                    console.log(brgy_list_elem);
+
+                    const brgy_polygon_elem = new google.maps.Polygon({
+                        paths: brgy_list_elem["political_boundaries"],
+                        strokeColor: "#571818",
+                        strokeOpacity: 1,
+                        strokeWeight: 2,
+                        // fillColor: "#ddf542",
+                        fillOpacity: 0
+                    });
+
+                    // riskManagement.brgyBoundariesList.append(brgy_polygon_elem);
+                    brgy_polygon_elem.setMap(riskManagement.riskMap);
+
+                };
             });
         },
 
@@ -38,9 +68,9 @@ var riskManagement = {
                 // center: cauayan_city
             });
 
-          
-
+            // Load default map elements
             riskManagement.pullCityBoundaries();
+            riskManagement.pullBarangayBoundaries();
         },
 
         markerClickEvent: (target_object) => {
