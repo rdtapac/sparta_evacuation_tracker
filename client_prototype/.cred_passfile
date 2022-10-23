@@ -1,0 +1,6 @@
+[risk_service]
+host=192.168.1.129
+user=risk_management_user
+dbname=db_risk_management
+password=P@ssw0rd
+port=5432

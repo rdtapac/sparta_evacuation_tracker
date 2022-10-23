@@ -78,12 +78,23 @@ WSGI_APPLICATION = 'client_prototype.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
+DB_HOST="192.168.31.129"
+DB_USER="risk_management_user"
+DB_NAME="db_risk_management"
+DB_PASSWORD="P@ssw0rd"
+DB_PORT=5432
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'OPTIONS': {
+#             'service': 'risk_service',
+#             'passfile': '.cred_passfile'
+#         }
+#         # 'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation

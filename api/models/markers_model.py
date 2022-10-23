@@ -1,8 +1,9 @@
+from .parent_model import ParentModel
 
-
-class MarkersModel:
+class MarkersModel(ParentModel):
 
     def __init__(self) -> None:
+        super().__init__()
         print("markers model instantiated")
         pass
 
