@@ -19,10 +19,14 @@ def markers(self, marker_type):
         markers_model = MarkersModel()
 
         response = {
-            "response": "this is a response from markerss"
+            "status": 200
         }
 
-        response = markers_model.get_markers(marker_type)
+        marker_data = markers_model.get_markers(marker_type)
+        response = {
+            "status": 200,
+            "data": marker_data
+        }
 
         return JsonResponse(response, safe=False)
     except Exception as e:
@@ -31,6 +35,10 @@ def markers(self, marker_type):
 
 
 def boundaries(self, boundary_type):
+
+    response = {
+        "status": 200
+    }
 
     boundaries_model = BoundariesModel()
 

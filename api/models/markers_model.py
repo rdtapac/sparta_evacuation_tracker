@@ -10,9 +10,9 @@ class MarkersModel(ParentModel):
 
     def get_markers(self, marker_type = 0):
         if marker_type == 0:
-            return self.get_facilities()
-        elif marker_type == 1:
             return self.get_evacuation_centers()
+        elif marker_type == 1:
+            return self.get_facilities()
         else:
             return []
 

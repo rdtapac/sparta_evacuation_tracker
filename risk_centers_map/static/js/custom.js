@@ -75,30 +75,41 @@ var riskManagement = {
 
         markerClickEvent: (target_object) => {
             console.log(target_object.get("id"));
+            console.log(target_object.get("marker_id"));
             // alert(target_object.attr("ssid"));
         },
 
         createMarker: () => {
 
-            $.get( riskManagement.base_url + "/api/markers/0", (data, textStatus, jqXHR) => {
-                markers_list_data = data;
-            
-                markers_list_keys = Object.keys(markers_list_data);
-                markers_list_keys.forEach((marker_ref_key) => {
-                    let process_marker_list = markers_list_data[marker_ref_key];
-                    for (let process_marker_ctr = 0; process_marker_ctr < process_marker_list.length; process_marker_ctr++ ) {
-                        process_elem = process_marker_list[process_marker_ctr];
-    
-                        if (process_marker_ctr > 10) {
-                            alert('out of range')
-                            break;
-                        }
-    
-                        switch(marker_ref_key) {
+            let marker_types = [
+                {marker_type_id: 0, marker_type_label: "Evacuation Centers"},
+                {marker_type_id: 1, marker_type_label: "Facilities"}
+            ];
+
+            // Loop througout the marker types
+            marker_types.forEach( (marker_type_elem) => {
+                let marker_type_id = marker_type_elem.marker_type_id
+                let marker_type_label = marker_type_elem.marker_type_label
+
+                $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
+                    markers_list_data = data.data;
+                    console.log(markers_list_data);
+
+                    if (marker_type_id == 0) {
+                        marker_storage_ref_key = "evacuation_centers";
+                    } else if (marker_type_id == 1) {
+                        marker_storage_ref_key = "facilities";
+                    }
+
+                    // Loop througout the markers current row dataset
+                    markers_list_data.forEach( (marker_list_elem) => {
+
+                        // choose marker appearance
+                        switch(marker_storage_ref_key) {
                             case "evacuation_centers":
                                 var icon_param = {
                                     url: riskManagement.base_url + "/static/icons/house.png", // url
-                                    scaledSize: new google.maps.Size(30, 30), // scaled size
+                                    scaledSize: new google.maps.Size(35, 35), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
                                 };
@@ -106,7 +117,7 @@ var riskManagement = {
                             case "pickup_points":
                                 var icon_param = {
                                     url: riskManagement.base_url + "/static/icons/taxi.png", // url
-                                    scaledSize: new google.maps.Size(30, 30), // scaled size
+                                    scaledSize: new google.maps.Size(35, 35), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
                                 };
@@ -114,50 +125,47 @@ var riskManagement = {
                             case "facilities":
                                 var icon_param = {
                                     url: riskManagement.base_url + "/static/icons/hospital.png", // url
-                                    scaledSize: new google.maps.Size(30, 30), // scaled size
+                                    scaledSize: new google.maps.Size(35, 35), // scaled size
                                     origin: new google.maps.Point(0,0), // origin
                                     anchor: new google.maps.Point(0, 0) // anchor
                                 };
                                 break;
                             default:
-                                var icon_param = {
-                                    url: riskManagement.base_url + "/static/icons/call.png", // url
-                                    scaledSize: new google.maps.Size(30, 30), // scaled size
-                                    origin: new google.maps.Point(0,0), // origin
-                                    anchor: new google.maps.Point(0, 0) // anchor
-                                };
-                                break;
+                                var icon_param = null
                         }
-    
+
                         // Create actual marker
                         let new_marker = new google.maps.Marker({
-                            position: process_elem["coordinates"],
-                            label: process_elem["label"],
+                            position: marker_list_elem["coordinates"],
+                            label: marker_list_elem["label"],
                             // icon: new google.maps.MarkerImage('http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_green.png')
-                            icon: icon_param
+                            icon: (icon_param) ? icon_param : null
                         });
             
-                        new_marker.set("id", process_elem["id"])
+                        // set additional marker attributes
+                        new_marker.set("id", marker_list_elem["id"])
+                        new_marker.set("marker_id", marker_list_elem["marker_id"])
                         new_marker.setMap(riskManagement.riskMap);
-    
-                        console.log("marker id:" + process_elem["id"]);
-                        console.log(process_elem);
-    
+
+                        // set marker event
                         new_marker.addListener("click", ()=>{
                             riskManagement.markerClickEvent(new_marker);
                         });
-                        console.log("!!!");
-                        // riskManagement.markersList[marker_ref_key].push(new_marker);
-    
-                    }
+
+                        // push to marker storage list
+                        riskManagement.markersList[marker_storage_ref_key].push(new_marker);
+
+
+                    });
                 });
-
-                console.log(riskManagement.markersList["evacuation_centers"]);    
             });
-
         },
 
         init: () => {
+            // load elements during init
+            riskManagement.createMarker();
+
+            // set events during init
             $('#chkbxEvac').click(() => {riskManagement.testAlert(this)});
             $('#test-button').click(()=> {riskManagement.createMarker()} )
         }
