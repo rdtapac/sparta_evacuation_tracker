@@ -80,12 +80,14 @@ var riskManagement = {
             // alert(target_object.attr("ssid"));
         },
 
-        pullMarkersFromAPI: (obj_marker_type_ele) => {
+        pullMarkersFromAPI: (obj_marker_type_elem) => {
 
-            let marker_type_id = obj_marker_type_ele.marker_type_id
-            let marker_type_label = obj_marker_type_ele.marker_type_label
+            let marker_type_id = obj_marker_type_elem.marker_type_id
 
             $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
+                
+                let marker_type_label = obj_marker_type_elem.marker_type_label
+
                 markers_list_data = data.data;
                 console.log(markers_list_data);
 
