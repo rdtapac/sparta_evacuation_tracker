@@ -60,11 +60,12 @@ var riskManagement = {
         },
 
         initMap: () => {
-            const cauayan_city = {lat: 16.869419, lng: 121.801228};
+            // const center_cauayan_city = {lat: 16.869419, lng: 121.801228};
+            const center_cauayan_city = {lat: 16.93434824674571, lng: 121.77511437674198};
             riskManagement.riskMap = new google.maps.Map(document.getElementById("render-map"), {
-                zoom:12,
-                center: cauayan_city,
-                mapTypeId: "terrain",
+                zoom:13,
+                center: center_cauayan_city,
+                mapTypeId: "roadmap",
                 // center: cauayan_city
             });
 
@@ -203,6 +204,8 @@ var riskManagement = {
             $("#chkbxFacilities").click( () => {
                 alert($("#chkbxFacilities").is(":checked"));
             });
+
+            // TODO: add barangay province on left panel if polygon in clicked
 
             // set events during init
             $('#chkbxEvac').click(() => {riskManagement.testAlert(this)});
