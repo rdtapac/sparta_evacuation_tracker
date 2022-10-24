@@ -6,8 +6,6 @@ class BoundariesModel(ParentModel):
     def __init__(self) -> None:
         super().__init__()
         print("boundaries model instantiated")
-        pass
-
 
     def get_boundaries(self, boundary_type = 0):
         if boundary_type == 0:
@@ -16,7 +14,6 @@ class BoundariesModel(ParentModel):
             return self.get_barangay_boundaries()
 
     def get_barangay_boundaries(self):
-
         return_result = []
 
         try:
@@ -30,10 +27,10 @@ class BoundariesModel(ParentModel):
             for rs_brgy_row in rs_barangay_rows:
 
                 obj_elem = {
-                    "barangay_id": rs_brgy_row["barangay_id"],
-                    "elem_id": "brgy_" + str(rs_brgy_row["barangay_id"]),
-                    "name": rs_brgy_row["name"],
-                    "political_boundaries": json.loads(rs_brgy_row["political_boundaries"])
+                    "barangay_id": rs_brgy_row["barangay_id"]
+                    , "elem_id": "brgy_" + str(rs_brgy_row["barangay_id"])
+                    , "name": rs_brgy_row["name"]
+                    , "political_boundaries": json.loads(rs_brgy_row["political_boundaries"])
                 }
 
                 return_result.append(obj_elem)

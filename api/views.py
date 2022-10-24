@@ -15,16 +15,20 @@ def test_endpoint(self):
 
 def markers(self, marker_type):
 
-    markers_model = MarkersModel()
+    try:
+        markers_model = MarkersModel()
 
-    response = {
-        "response": "this is a response from markerss"
-    }
+        response = {
+            "response": "this is a response from markerss"
+        }
 
-    if marker_type == 0:
-        response = markers_model.get_markers()
+        response = markers_model.get_markers(marker_type)
 
-    return JsonResponse(response)
+        return JsonResponse(response, safe=False)
+    except Exception as e:
+        print("markers endpoint error")
+        print(e)
+
 
 def boundaries(self, boundary_type):
 
