@@ -52,6 +52,7 @@ class MarkersModel(ParentModel):
                     "marker_id": rs_marker_row["ec_evacuation_center_id"]
                     , "label": rs_marker_row["fc_name"]
                     , "id": "evacuation_center_" + str(rs_marker_row["ec_evacuation_center_id"])
+                    , "address": rs_marker_row["fc_address"]
                     , "coordinates": json.loads(rs_marker_row["fc_coordinates"])
                     , "primary_phone": rs_marker_row["fc_phone_primary"]
                     , "facility_type_id": rs_marker_row["ft_facility_type_id"]
@@ -104,6 +105,7 @@ class MarkersModel(ParentModel):
                     "marker_id": rs_marker_row["fc_facility_id"]
                     , "label": rs_marker_row["fc_name"]
                     , "id": "facility_" + str(rs_marker_row["fc_facility_id"])
+                    , "address": rs_marker_row["fc_address"]
                     , "coordinates": json.loads(rs_marker_row["fc_coordinates"])
                     , "primary_phone": rs_marker_row["fc_phone_primary"]
                     , "facility_type_id": rs_marker_row["ft_facility_type_id"]

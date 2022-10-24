@@ -79,91 +79,130 @@ var riskManagement = {
             // alert(target_object.attr("ssid"));
         },
 
-        createMarker: () => {
+        pullMarkersFromAPI: (obj_marker_type_ele) => {
+
+            let marker_type_id = obj_marker_type_ele.marker_type_id
+            let marker_type_label = obj_marker_type_ele.marker_type_label
+
+            $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
+                markers_list_data = data.data;
+                console.log(markers_list_data);
+
+                if (marker_type_id == 0) {
+                    marker_storage_ref_key = "evacuation_centers";
+                } else if (marker_type_id == 1) {
+                    marker_storage_ref_key = "facilities";
+                }
+
+                // Loop througout the markers current row dataset
+                markers_list_data.forEach( (marker_list_elem) => {
+
+                    // choose marker appearance
+                    switch(marker_storage_ref_key) {
+                        case "evacuation_centers":
+                            var icon_param = {
+                                url: riskManagement.base_url + "/static/icons/house.png", // url
+                                scaledSize: new google.maps.Size(35, 35), // scaled size
+                                origin: new google.maps.Point(0,0), // origin
+                                anchor: new google.maps.Point(0, 0) // anchor
+                            };
+                            break;
+                        case "pickup_points":
+                            var icon_param = {
+                                url: riskManagement.base_url + "/static/icons/taxi.png", // url
+                                scaledSize: new google.maps.Size(35, 35), // scaled size
+                                origin: new google.maps.Point(0,0), // origin
+                                anchor: new google.maps.Point(0, 0) // anchor
+                            };
+                            break;
+                        case "facilities":
+                            var icon_param = {
+                                url: riskManagement.base_url + "/static/icons/hospital.png", // url
+                                scaledSize: new google.maps.Size(35, 35), // scaled size
+                                origin: new google.maps.Point(0,0), // origin
+                                anchor: new google.maps.Point(0, 0) // anchor
+                            };
+                            break;
+                        default:
+                            var icon_param = null
+                    }
+
+                    // Create actual marker
+                    let new_marker = new google.maps.Marker({
+                        position: marker_list_elem["coordinates"],
+                        label: marker_list_elem["label"],
+                        // icon: new google.maps.MarkerImage('http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_green.png')
+                        icon: (icon_param) ? icon_param : null
+                    });
+        
+                    // set additional marker attributes
+                    new_marker.set("id", marker_list_elem["id"])
+                    new_marker.set("marker_id", marker_list_elem["marker_id"])
+                    new_marker.setMap(riskManagement.riskMap);
+
+                    // Create info window content
+                    google.maps.InfoWindow.prototype.opened = false;
+                    obj_info_window = new google.maps.InfoWindow();
+                    // var obj_info_window = new google.maps.InfoWindow({
+                    //     content: str_info_window_contents
+                    // });
+
+                    obj_map = riskManagement.riskMap
+
+                    // set marker event
+                    new_marker.addListener("click", ()=>{
+                        if (!google.maps.InfoWindow.prototype.opened) {
+                            google.maps.InfoWindow.prototype.opened = true;
+                            obj_info_window.open({
+                                anchor: new_marker,
+                                obj_map
+                            });
+                        }  else {
+                            google.maps.InfoWindow.prototype.opened = false;
+                            obj_info_window.close()
+                        }
+
+                        var str_info_window_contents = '<div id="content">' + 
+                            '<div><h4 id="markerHeading">' + marker_list_elem['label'] + '</h4></div>' +
+                            '<div>' + marker_type_label +  '</div>' + 
+                            '<div> <b>Address:</b>&nbsp;' + marker_list_elem["address"] +  '</div>' + 
+                            '</div>'
+
+                        obj_info_window.setContent(str_info_window_contents);
+                        riskManagement.markerClickEvent(new_marker);
+
+                    });
+
+                    // push to marker storage list
+                    riskManagement.markersList[marker_storage_ref_key].push(new_marker);
+
+
+                });
+            });
+        },
+
+        loadInitMarkers: () => {
 
             let marker_types = [
-                {marker_type_id: 0, marker_type_label: "Evacuation Centers"},
-                {marker_type_id: 1, marker_type_label: "Facilities"}
+                {marker_type_id: 0, marker_type_label: "Evacuation Center"},
+                {marker_type_id: 1, marker_type_label: "Facility"}
             ];
 
             // Loop througout the marker types
-            marker_types.forEach( (marker_type_elem) => {
-                let marker_type_id = marker_type_elem.marker_type_id
-                let marker_type_label = marker_type_elem.marker_type_label
+            marker_types.forEach( (marker_type_elem, marker_type_label) => {
+                riskManagement.pullMarkersFromAPI(marker_type_elem);
 
-                $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
-                    markers_list_data = data.data;
-                    console.log(markers_list_data);
-
-                    if (marker_type_id == 0) {
-                        marker_storage_ref_key = "evacuation_centers";
-                    } else if (marker_type_id == 1) {
-                        marker_storage_ref_key = "facilities";
-                    }
-
-                    // Loop througout the markers current row dataset
-                    markers_list_data.forEach( (marker_list_elem) => {
-
-                        // choose marker appearance
-                        switch(marker_storage_ref_key) {
-                            case "evacuation_centers":
-                                var icon_param = {
-                                    url: riskManagement.base_url + "/static/icons/house.png", // url
-                                    scaledSize: new google.maps.Size(35, 35), // scaled size
-                                    origin: new google.maps.Point(0,0), // origin
-                                    anchor: new google.maps.Point(0, 0) // anchor
-                                };
-                                break;
-                            case "pickup_points":
-                                var icon_param = {
-                                    url: riskManagement.base_url + "/static/icons/taxi.png", // url
-                                    scaledSize: new google.maps.Size(35, 35), // scaled size
-                                    origin: new google.maps.Point(0,0), // origin
-                                    anchor: new google.maps.Point(0, 0) // anchor
-                                };
-                                break;
-                            case "facilities":
-                                var icon_param = {
-                                    url: riskManagement.base_url + "/static/icons/hospital.png", // url
-                                    scaledSize: new google.maps.Size(35, 35), // scaled size
-                                    origin: new google.maps.Point(0,0), // origin
-                                    anchor: new google.maps.Point(0, 0) // anchor
-                                };
-                                break;
-                            default:
-                                var icon_param = null
-                        }
-
-                        // Create actual marker
-                        let new_marker = new google.maps.Marker({
-                            position: marker_list_elem["coordinates"],
-                            label: marker_list_elem["label"],
-                            // icon: new google.maps.MarkerImage('http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_green.png')
-                            icon: (icon_param) ? icon_param : null
-                        });
-            
-                        // set additional marker attributes
-                        new_marker.set("id", marker_list_elem["id"])
-                        new_marker.set("marker_id", marker_list_elem["marker_id"])
-                        new_marker.setMap(riskManagement.riskMap);
-
-                        // set marker event
-                        new_marker.addListener("click", ()=>{
-                            riskManagement.markerClickEvent(new_marker);
-                        });
-
-                        // push to marker storage list
-                        riskManagement.markersList[marker_storage_ref_key].push(new_marker);
-
-
-                    });
-                });
             });
         },
 
         init: () => {
             // load elements during init
-            riskManagement.createMarker();
+            riskManagement.loadInitMarkers();
+
+            // TODO : add marker handling after detecting checked (load from backend or remove from markers category list   )
+            $("#chkbxFacilities").click( () => {
+                alert($("#chkbxFacilities").is(":checked"));
+            });
 
             // set events during init
             $('#chkbxEvac').click(() => {riskManagement.testAlert(this)});
