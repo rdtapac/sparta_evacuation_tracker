@@ -3,6 +3,11 @@ var riskManagement = {
         riskMap: null,
         base_url: "http://192.168.31.129:8000",
 
+        markerTypes: {
+            "evacuation_centers": {marker_type_id: 0, marker_type_label: "Evacuation Center"},
+            "facilities": {marker_type_id: 1, marker_type_label: "Facility"}
+        },
+
         markersList: {
             "evacuation_centers": [],
             "pickup_points": [],
@@ -14,6 +19,18 @@ var riskManagement = {
 
         testAlert: (passed_id) => {
             alert('test alert:' + $(passed_id).attr('id'));
+        },
+
+        returnMarkerArrayKeyElem: (marker_id) => {
+            let marker_array_key = null;
+            switch(marker_id) {
+                case 1:
+                    marker_array_key = 'facilities';
+                    break;
+                default:
+                    marker_array_key = 'evacuation_centers';
+            }
+            return marker_array_key;
         },
 
         pullCityBoundaries: () => {
@@ -43,13 +60,17 @@ var riskManagement = {
                     brgy_list_elem = brgy_list[i]
                     console.log(brgy_list_elem);
 
+                    let poly_color = '#33CC33'
+
                     const brgy_polygon_elem = new google.maps.Polygon({
                         paths: brgy_list_elem["political_boundaries"],
-                        strokeColor: "#571818",
+                        // strokeColor: "#571818",
+                        strokeColor: '#196619',
                         strokeOpacity: 1,
                         strokeWeight: 2,
+                        fillColor: poly_color,  
                         // fillColor: "#ddf542",
-                        fillOpacity: 0
+                        // fillOpacity: 0
                     });
 
                     // riskManagement.brgyBoundariesList.append(brgy_polygon_elem);
@@ -87,21 +108,14 @@ var riskManagement = {
             $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
                 
                 let marker_type_label = obj_marker_type_elem.marker_type_label
-
-                markers_list_data = data.data;
-                console.log(markers_list_data);
-
-                if (marker_type_id == 0) {
-                    marker_storage_ref_key = "evacuation_centers";
-                } else if (marker_type_id == 1) {
-                    marker_storage_ref_key = "facilities";
-                }
+                let markers_list_data = data.data;
+                let marker_storage_key_ref = riskManagement.returnMarkerArrayKeyElem(marker_type_id)
 
                 // Loop througout the markers current row dataset
                 markers_list_data.forEach( (marker_list_elem) => {
 
                     // choose marker appearance
-                    switch(marker_storage_ref_key) {
+                    switch(marker_storage_key_ref) {
                         case "evacuation_centers":
                             var icon_param = {
                                 url: riskManagement.base_url + "/static/icons/house.png", // url
@@ -146,10 +160,6 @@ var riskManagement = {
                     // Create info window content
                     google.maps.InfoWindow.prototype.opened = false;
                     obj_info_window = new google.maps.InfoWindow();
-                    // var obj_info_window = new google.maps.InfoWindow({
-                    //     content: str_info_window_contents
-                    // });
-
                     obj_map = riskManagement.riskMap
 
                     // set marker event
@@ -165,11 +175,13 @@ var riskManagement = {
                             obj_info_window.close()
                         }
 
-                        var str_info_window_contents = '<div id="content">' + 
-                            '<div><h4 id="markerHeading">' + marker_list_elem['label'] + '</h4></div>' +
-                            '<div>' + marker_type_label +  '</div>' + 
-                            '<div> <b>Address:</b>&nbsp;' + marker_list_elem["address"] +  '</div>' + 
-                            '</div>'
+                        var str_info_window_contents =`
+                        <div id="content">
+                            <div><h4 id="markerHeading">${marker_list_elem['label']}</h4></div>
+                            <div>${marker_type_label}</div>
+                            <div> <b>Address:</b>&nbsp;${marker_list_elem["address"]}</div>
+                        </div>
+                        `;
 
                         obj_info_window.setContent(str_info_window_contents);
                         riskManagement.markerClickEvent(new_marker);
@@ -177,7 +189,7 @@ var riskManagement = {
                     });
 
                     // push to marker storage list
-                    riskManagement.markersList[marker_storage_ref_key].push(new_marker);
+                    riskManagement.markersList[marker_storage_key_ref].push(new_marker);
 
 
                 });
@@ -185,32 +197,54 @@ var riskManagement = {
         },
 
         loadInitMarkers: () => {
-
-            let marker_types = [
-                {marker_type_id: 0, marker_type_label: "Evacuation Center"},
-                {marker_type_id: 1, marker_type_label: "Facility"}
-            ];
-
             // Loop througout the marker types
-            marker_types.forEach( (marker_type_elem, marker_type_label) => {
-                riskManagement.pullMarkersFromAPI(marker_type_elem);
+            for (const marker_type_key of Object.keys(riskManagement.markerTypes)) {
+                console.log(riskManagement.markerTypes[marker_type_key]);
+                riskManagement.pullMarkersFromAPI(riskManagement.markerTypes[marker_type_key]);
+            }
+        },
 
+        removeMarkers: (marker_id) => {
+            let marker_array_key = riskManagement.returnMarkerArrayKeyElem(marker_id);
+            riskManagement.markersList[marker_array_key].map( (mapMarker) => {
+                mapMarker.setMap(null);
             });
+            riskManagement.markersList[marker_array_key] = []   
+        },
+
+        loadMarkers: (marker_id) => {
+            let marker_array_key = riskManagement.returnMarkerArrayKeyElem(marker_id);
         },
 
         init: () => {
             // load elements during init
             riskManagement.loadInitMarkers();
 
-            // TODO : add marker handling after detecting checked (load from backend or remove from markers category list   )
-            $("#chkbxFacilities").click( () => {
-                alert($("#chkbxFacilities").is(":checked"));
-            });
+            // Set events during init
+            $(".map-marker-checkbox").on("click", (e) => {
 
+                let marker_key_ref_elem = null;
+                let marker_idx_ref_elem = null;
+
+                switch (e.target.id){
+                    case "chkbxFacilities":
+                        marker_key_ref_elem = "facilities";
+                        marker_idx_ref_elem = 1;
+                        break;
+                    default:
+                        marker_key_ref_elem = "evacuation_centers";
+                        marker_idx_ref_elem = 0;
+                }
+                if ($(e.target).is(":checked")) {
+                    riskManagement.pullMarkersFromAPI(riskManagement.markerTypes[marker_key_ref_elem]);
+                } else {
+                    riskManagement.removeMarkers(marker_idx_ref_elem);
+                }
+
+            });            
             // TODO: add barangay province on left panel if polygon in clicked
-
-            // set events during init
-            $('#chkbxEvac').click(() => {riskManagement.testAlert(this)});
+            
+        
             $('#test-button').click(()=> {riskManagement.createMarker()} )
         }
 };
