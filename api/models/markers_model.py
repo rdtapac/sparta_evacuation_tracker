@@ -61,6 +61,7 @@ class MarkersModel(ParentModel):
                         "facility_id": rs_marker_row["ec_facility_id"]
                         , "date_active_start": rs_marker_row["ec_date_active_start"]
                         , "date_active_end": rs_marker_row["ec_date_active_end"]
+                        , "is_evacuation_center": True
                     }
                 }
                 print(obj_marker_row)
@@ -79,6 +80,9 @@ class MarkersModel(ParentModel):
 
         try:
             sql_get_facility_markers = """
+                WITH evacuation_centers_list AS (
+                    SELECT facility_id FROM evacuation_center ec 
+                ) 
                 SELECT 
                     fc.facility_id as fc_facility_id
                     , fc.barangay_id as fc_barangay_id
@@ -95,6 +99,8 @@ class MarkersModel(ParentModel):
                     facility_type AS ft
                     ON
                         fc.facility_type_id = ft.facility_type_id
+                AND
+                    fc.facility_id NOT IN(SELECT * FROM evacuation_centers_list)
             """                
 
             self.db_conn.execute(sql_get_facility_markers)
@@ -118,52 +124,3 @@ class MarkersModel(ParentModel):
         except Exception as e:
             print("Error encountered in markers model (facilities)")
             print(e)
-
-        # return {
-        #         "evacuation_centers": [
-        #             {
-        #                 "label": "Evacuation Center 1",
-        #                 "id": "e_center_1",
-        #                 "coordinates": {"lat": 16.87854037431313, "lng": 121.85548420423102}
-        #             },
-        #             {
-        #                 "label": "Evacuation Center 2",
-        #                 "id": "e_center_2",
-        #                 "coordinates": {"lat": 16.939473443912565, "lng": 121.76793690195545}
-        #             },
-        #             {
-        #                 "label": "Evacuation Center 3",
-        #                 "id": "e_center_3",
-        #                 "coordinates": {"lat": 16.942921896125124, "lng": 121.77806492326522}
-        #             }
-        #         ],
-        #         "pickup_points": [
-        #             {
-        #                 "label": "Pickup Point 1",
-        #                 "id": "pickup_1",
-        #                 "coordinates": {"lat": 16.9302772623189, "lng": 121.7990076113972}
-        #             },
-        #             {
-        #                 "label": "Pickup Point 2",
-        #                 "id": "pickup_2",
-        #                 "coordinates": {"lat": 16.885932227661485, "lng": 121.67489643526515}
-        #             },
-        #             {
-        #                 "label": "Pickup Point 3",
-        #                 "id": "pickup_3",
-        #                 "coordinates": {"lat": 16.864741475060434, "lng": 121.74201603398606}
-        #             }
-        #         ],
-        #         "facilities": [
-        #             {
-        #                 "label": "Facility 1",
-        #                 "id": "facility_1",
-        #                 "coordinates": {"lat": 16.948649752327544, "lng": 121.77235492231901}
-        #             },
-        #             {
-        #                 "label": "Facility 2",
-        #                 "id": "facility_2",
-        #                 "coordinates": {"lat": 16.93912867057586, "lng": 121.81872199673616}
-        #             },
-        #         ]
-        #     }

@@ -58,14 +58,14 @@ var riskManagement = {
                 brgy_list = data.data;
                 for (let i = 0; i < brgy_list.length; i++) {
                     brgy_list_elem = brgy_list[i]
-                    console.log(brgy_list_elem);
-
-                    let poly_color = '#33CC33'
+                    // console.log(brgy_list_elem);
+                    let poly_color = '#33CC33';
+                    let stroke_color = '#196619';
 
                     const brgy_polygon_elem = new google.maps.Polygon({
                         paths: brgy_list_elem["political_boundaries"],
                         // strokeColor: "#571818",
-                        strokeColor: '#196619',
+                        strokeColor: stroke_color,
                         strokeOpacity: 1,
                         strokeWeight: 2,
                         fillColor: poly_color,  
@@ -103,10 +103,11 @@ var riskManagement = {
 
         pullMarkersFromAPI: (obj_marker_type_elem) => {
 
-            let marker_type_id = obj_marker_type_elem.marker_type_id
+            var marker_type_id = obj_marker_type_elem.marker_type_id
 
-            $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
-                
+            // $.get( riskManagement.base_url + "/api/markers/" + marker_type_id, (data, textStatus, jqXHR) => {
+            $.getJSON( riskManagement.base_url + "/api/markers/" + marker_type_id, (data) => {
+
                 let marker_type_label = obj_marker_type_elem.marker_type_label
                 let markers_list_data = data.data;
                 let marker_storage_key_ref = riskManagement.returnMarkerArrayKeyElem(marker_type_id)
@@ -160,7 +161,7 @@ var riskManagement = {
                     // Create info window content
                     google.maps.InfoWindow.prototype.opened = false;
                     obj_info_window = new google.maps.InfoWindow();
-                    obj_map = riskManagement.riskMap
+                    obj_map = riskManagement.riskMap;
 
                     // set marker event
                     new_marker.addListener("click", ()=>{
@@ -175,15 +176,49 @@ var riskManagement = {
                             obj_info_window.close()
                         }
 
+                        // obj_info_window.open({
+                        //     anchor: new_marker,
+                        //     obj_map
+                        // });
+
+                        if (('additional_attributes' in marker_list_elem) 
+                        && (marker_list_elem['additional_attributes']['is_evacuation_center']) ) {
+                            marker_type_label = "Evacuation Center";
+                            console.log("must be evac center")
+                        }    
+
+                        console.log(marker_type_label)
+
+                        // var content_info_window_id = "content_" + marker_list_elem["marker_id"];
+                        var content_info_window_id = "content_window";
+
                         var str_info_window_contents =`
-                        <div id="content">
-                            <div><h4 id="markerHeading">${marker_list_elem['label']}</h4></div>
-                            <div>${marker_type_label}</div>
-                            <div> <b>Address:</b>&nbsp;${marker_list_elem["address"]}</div>
+                        <div id="${content_info_window_id}">
+                            <div><h4 class="markerHeading">${marker_list_elem['label']}</h4></div>
+                            <div><b>${marker_type_label}</b></div>
+                            <div><b>Address:</b>&nbsp;${marker_list_elem["address"]}</div>
+                            <div class="content-additional-attributes>${additional_attributes}</div>
+                            <div id="info_additional_contents"></div>
                         </div>
                         `;
 
                         obj_info_window.setContent(str_info_window_contents);
+
+                        console.log(marker_list_elem)
+                        
+                        if ('additional_attributes' in marker_list_elem) {
+                            console.log('has attributes');
+                            let additional_attr = marker_list_elem["additional_attributes"];
+                            
+                            let status_active = (additional_attr["date_active_end"]) ? 'Not active' : 'Active';
+
+                            var additional_attributes = `
+                            <div><b>Status:</b>&nbsp;${status_active}</div>
+                            <div><b>Established on:</b>&nbsp;${additional_attr["date_active_start"]}</div>
+                            `;
+                            $("#" + content_info_window_id).append(additional_attributes);                        
+                        }
+                        
                         riskManagement.markerClickEvent(new_marker);
 
                     });
