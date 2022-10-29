@@ -83,7 +83,7 @@ var riskManagement = {
         initMap: () => {
             // const center_cauayan_city = {lat: 16.869419, lng: 121.801228};
             const center_cauayan_city = {lat: 16.93434824674571, lng: 121.77511437674198};
-            riskManagement.riskMap = new google.maps.Map(document.getElementById("render-map"), {
+            riskManagement.riskMap = new google.maps.Map(document.getElementById("renderMap"), {
                 zoom:13,
                 center: center_cauayan_city,
                 mapTypeId: "roadmap",
@@ -175,6 +175,8 @@ var riskManagement = {
                             google.maps.InfoWindow.prototype.opened = false;
                             obj_info_window.close()
                         }
+                        let content_info_window_id = "content_window";
+                        obj_info_window.setContent(`<div id="${content_info_window_id}"></div>`);
 
                         // obj_info_window.open({
                         //     anchor: new_marker,
@@ -190,7 +192,7 @@ var riskManagement = {
                         console.log(marker_type_label)
 
                         // var content_info_window_id = "content_" + marker_list_elem["marker_id"];
-                        var content_info_window_id = "content_window";
+                        
 
                         var str_info_window_contents =`
                         <div id="${content_info_window_id}">
@@ -280,7 +282,9 @@ var riskManagement = {
             // TODO: add barangay province on left panel if polygon in clicked
             
         
-            $('#test-button').click(()=> {riskManagement.createMarker()} )
+            $('#test-button').click(()=> {
+                $('#barangayInfo').modal('show');
+            } )
         }
 };
 
