@@ -167,9 +167,6 @@ var riskManagement = {
                     google.maps.InfoWindow.prototype.opened = false;
                     obj_map = riskManagement.riskMap;
 
-                    // obj_info_window = new google.maps.InfoWindow({
-                    //     content: $(str_info_window_contents).html()
-                    // });
                     obj_info_window = new google.maps.InfoWindow();
 
                     // set marker event
