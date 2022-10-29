@@ -41,7 +41,6 @@ var riskManagement = {
             $.get(riskManagement.base_url + "/api/boundaries/0", (data, textStatus, jqXHR) => {
                 const cauayan_poly_coords = data.data
                 const city_political_boundary = new google.maps.Polygon({
-                    // paths: cauayan_poly_coords,
                     paths: cauayan_poly_coords,
                     strokeColor: "#3F4D4F",
                     strokeOpacity: 0.8,
@@ -58,10 +57,25 @@ var riskManagement = {
             $.get(riskManagement.base_url + "/api/boundaries/1", (data, textStatus, jqXHR) => {
                 brgy_list = data.data;
                 for (let i = 0; i < brgy_list.length; i++) {
+
                     brgy_list_elem = brgy_list[i]
-                    // console.log(brgy_list_elem);
+                    console.log(brgy_list_elem);
                     let poly_color = '#33CC33';
                     let stroke_color = '#196619';
+
+                    switch(brgy_list_elem["risk"]) {
+                        case "high":
+                            poly_color = '#FF3333';
+                            stroke_color = '#B30000';
+                            break;
+                        case "medium":
+                            poly_color = '#E6E600';
+                            stroke_color = '#FFFF33';
+                            break;
+                        default:
+                            poly_color = '#33CC33';
+                            stroke_color = '#196619';
+                    }
 
                     const brgy_polygon_elem = new google.maps.Polygon({
                         paths: brgy_list_elem["political_boundaries"],

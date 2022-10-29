@@ -31,7 +31,7 @@ class BoundariesModel(ParentModel):
                     , "elem_id": "brgy_" + str(rs_brgy_row["barangay_id"])
                     , "name": rs_brgy_row["name"]
                     , "political_boundaries": json.loads(rs_brgy_row["political_boundaries"])
-                    , "alert_status": self.detect_alert_status(rs_brgy_row["barangay_id"])
+                    , "risk": self.detect_alert_status(rs_brgy_row["barangay_id"])
                 }
 
                 return_result.append(obj_elem)
@@ -43,7 +43,13 @@ class BoundariesModel(ParentModel):
         return return_result
 
     def detect_alert_status(self, brgy_id):
-        return_status = 'no_risk'
+        return_status = 'none'
+
+        # TODO: this is just a placeholder, create actual logic for identifying riks type
+        if brgy_id == 1:
+            return_status = 'medium'
+        elif brgy_id == 2:
+            return_status = 'high'
         
         return return_status
 
