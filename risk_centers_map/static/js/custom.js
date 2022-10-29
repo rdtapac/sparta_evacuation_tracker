@@ -2,6 +2,7 @@ var riskManagement = {
 
         riskMap: null,
         base_url: "http://192.168.31.129:8000",
+        infoModal: null,
 
         markerTypes: {
             "evacuation_centers": {marker_type_id: 0, marker_type_label: "Evacuation Center"},
@@ -111,6 +112,7 @@ var riskManagement = {
                 let marker_type_label = obj_marker_type_elem.marker_type_label
                 let markers_list_data = data.data;
                 let marker_storage_key_ref = riskManagement.returnMarkerArrayKeyElem(marker_type_id)
+                let label_style = 'bg-primary';
 
                 // Loop througout the markers current row dataset
                 markers_list_data.forEach( (marker_list_elem) => {
@@ -124,6 +126,8 @@ var riskManagement = {
                                 origin: new google.maps.Point(0,0), // origin
                                 anchor: new google.maps.Point(0, 0) // anchor
                             };
+                            label_style = 'bg-danger';
+                            marker_type_label = "Evacuation Center";
                             break;
                         case "pickup_points":
                             var icon_param = {
@@ -148,8 +152,6 @@ var riskManagement = {
                     // Create actual marker
                     let new_marker = new google.maps.Marker({
                         position: marker_list_elem["coordinates"],
-                        label: marker_list_elem["label"],
-                        // icon: new google.maps.MarkerImage('http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_green.png')
                         icon: (icon_param) ? icon_param : null
                     });
         
@@ -160,75 +162,51 @@ var riskManagement = {
 
                     // Create info window content
                     google.maps.InfoWindow.prototype.opened = false;
-                    obj_info_window = new google.maps.InfoWindow();
                     obj_map = riskManagement.riskMap;
+
+
+                    var str_info_window_contents =`
+                    <div class="card-body">
+                      <h5 class="card-title">${marker_list_elem['label']}</h5>
+                      <h6 class="card-subtitle mb-2"><span class="badge ${label_style}">${marker_type_label}</span></h6>
+                      <div class="card-text">
+                          <div><b>Address:</b>&nbsp;${marker_list_elem["address"]}</div>
+                          <div class="content-additional-attributes" id="infoContents"></div>
+                      </div>
+                    </div>
+                    `;
+
+                    obj_info_window = new google.maps.InfoWindow({
+                        content: $(str_info_window_contents).html()
+                    });
 
                     // set marker event
                     new_marker.addListener("click", ()=>{
-                        if (!google.maps.InfoWindow.prototype.opened) {
-                            google.maps.InfoWindow.prototype.opened = true;
-                            obj_info_window.open({
-                                anchor: new_marker,
-                                obj_map
-                            });
-                        }  else {
-                            google.maps.InfoWindow.prototype.opened = false;
-                            obj_info_window.close()
-                        }
                         let content_info_window_id = "content_window";
-                        obj_info_window.setContent(`<div id="${content_info_window_id}"></div>`);
+                        // console.log(marker_type_label)
 
-                        // obj_info_window.open({
-                        //     anchor: new_marker,
-                        //     obj_map
-                        // });
+                        obj_info_window.open({
+                            anchor: new_marker,
+                            obj_map});
 
-                        if (('additional_attributes' in marker_list_elem) 
-                        && (marker_list_elem['additional_attributes']['is_evacuation_center']) ) {
-                            marker_type_label = "Evacuation Center";
-                            console.log("must be evac center")
-                        }    
+                        google.maps.event.addListener(obj_info_window, 'domready', function() {
+                            if ('additional_attributes' in marker_list_elem) {
+                                let additional_attr = marker_list_elem["additional_attributes"];
+                                let status_active = (additional_attr["date_active_end"]) ? 'Not active' : 'Active';
 
-                        console.log(marker_type_label)
-
-                        // var content_info_window_id = "content_" + marker_list_elem["marker_id"];
-                        
-
-                        var str_info_window_contents =`
-                        <div id="${content_info_window_id}">
-                            <div><h4 class="markerHeading">${marker_list_elem['label']}</h4></div>
-                            <div><b>${marker_type_label}</b></div>
-                            <div><b>Address:</b>&nbsp;${marker_list_elem["address"]}</div>
-                            <div class="content-additional-attributes>${additional_attributes}</div>
-                            <div id="info_additional_contents"></div>
-                        </div>
-                        `;
-
-                        obj_info_window.setContent(str_info_window_contents);
-
-                        console.log(marker_list_elem)
-                        
-                        if ('additional_attributes' in marker_list_elem) {
-                            console.log('has attributes');
-                            let additional_attr = marker_list_elem["additional_attributes"];
-                            
-                            let status_active = (additional_attr["date_active_end"]) ? 'Not active' : 'Active';
-
-                            var additional_attributes = `
-                            <div><b>Status:</b>&nbsp;${status_active}</div>
-                            <div><b>Established on:</b>&nbsp;${additional_attr["date_active_start"]}</div>
-                            `;
-                            $("#" + content_info_window_id).append(additional_attributes);                        
-                        }
-                        
-                        riskManagement.markerClickEvent(new_marker);
-
+                                let additional_contents = `
+                                    <div><b>Status:</b>&nbsp;&nbsp;<span class="badge rounded-pill bg-success">${status_active}</span></div>
+                                    <div><b>Established on:</b>&nbsp;${additional_attr["date_active_start"]}</div>
+                                `;
+                                $('#infoContents').html(additional_contents);
+                            } else {
+                                $('#infoContents').html(null);
+                            }
+                        });
                     });
 
                     // push to marker storage list
                     riskManagement.markersList[marker_storage_key_ref].push(new_marker);
-
-
                 });
             });
         },
@@ -255,6 +233,10 @@ var riskManagement = {
 
         init: () => {
             // load elements during init
+            riskManagement.infoModal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
+                keyboard: false
+            });
+
             riskManagement.loadInitMarkers();
 
             // Set events during init
@@ -278,13 +260,15 @@ var riskManagement = {
                     riskManagement.removeMarkers(marker_idx_ref_elem);
                 }
 
-            });            
-            // TODO: add barangay province on left panel if polygon in clicked
-            
+            });
         
-            $('#test-button').click(()=> {
-                $('#barangayInfo').modal('show');
+            $('#testButton').click(()=> {
+                riskManagement.displayBarangayInfo();
             } )
+        },
+
+        displayBarangayInfo: () => {
+            riskManagement.infoModal.show();
         }
 };
 
