@@ -21,8 +21,10 @@ class BoundariesModel(ParentModel):
                 SELECT barangay_id, name, political_boundaries from barangay
             """
 
-            self.db_conn.execute(sql_get_city_boundaries)
-            rs_barangay_rows = self.db_conn.fetchall()
+            self.obj_cursor.execute(sql_get_city_boundaries)
+            rs_barangay_rows = self.obj_cursor.fetchall()
+
+            a = len(rs_barangay_rows)
 
             for rs_brgy_row in rs_barangay_rows:
 
@@ -34,6 +36,8 @@ class BoundariesModel(ParentModel):
                     , "risk": self.detect_alert_status(rs_brgy_row["barangay_id"])
                 }
 
+                print(obj_elem)
+
                 return_result.append(obj_elem)
 
         except Exception as e:
@@ -43,13 +47,43 @@ class BoundariesModel(ParentModel):
         return return_result
 
     def detect_alert_status(self, brgy_id):
-        return_status = 'none'
+        return_status = 'low'
 
-        # TODO: this is just a placeholder, create actual logic for identifying riks type
-        if brgy_id == 1:
-            return_status = 'medium'
-        elif brgy_id == 2:
-            return_status = 'high'
+        try:
+            sql_get_city_boundaries = """
+                SELECT 
+                    barangay_id
+                    , num_exp_flooding
+                    , norm_num_exp_flooding
+                    , prop_exp_flooding
+                    , norm_prop_exp_flooding
+                FROM barangay_risk_statistics
+                WHERE barangay_id = {brgy_id}
+            """.format(brgy_id = brgy_id)
+
+            self.obj_cursor.execute(sql_get_city_boundaries)
+            rs_brgy_row = self.obj_cursor.fetchone()
+
+            if rs_brgy_row is None:
+                return return_status
+
+            norm_num_exp_flooding_pct = rs_brgy_row['prop_exp_flooding']
+
+            print(type(norm_num_exp_flooding_pct))
+            print(norm_num_exp_flooding_pct)
+            a = 1
+
+            if norm_num_exp_flooding_pct > 50:
+                print('test')
+                return_status = 'high'
+            elif norm_num_exp_flooding_pct <= 50 and norm_num_exp_flooding_pct >= 25:
+                return_status = 'medium'
+            else:
+                return_status = 'low'
+
+            # return_result = json.loads(rs_city_row['political_boundaries'])
+        except Exception as e:
+            print(e)
         
         return return_status
 
@@ -59,11 +93,11 @@ class BoundariesModel(ParentModel):
 
         try:
             sql_get_city_boundaries = """
-                SELECT name, political_boundaries from cauayan_city
+                SELECT name, political_boundaries FROM cauayan_city
             """
 
-            self.db_conn.execute(sql_get_city_boundaries)
-            rs_city_row = self.db_conn.fetchone()
+            self.obj_cursor.execute(sql_get_city_boundaries)
+            rs_city_row = self.obj_cursor.fetchone()
 
             return_result = json.loads(rs_city_row['political_boundaries'])
         except Exception as e:

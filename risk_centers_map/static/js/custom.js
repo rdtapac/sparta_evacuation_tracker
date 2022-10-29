@@ -54,12 +54,11 @@ var riskManagement = {
         },
 
         pullBarangayBoundaries: () => {
-            $.get(riskManagement.base_url + "/api/boundaries/1", (data, textStatus, jqXHR) => {
-                brgy_list = data.data;
-                for (let i = 0; i < brgy_list.length; i++) {
+            $.getJSON(riskManagement.base_url + "/api/boundaries/1", (data, textStatus, jqXHR) => {
+                var brgy_list = data.data;
+                var brgy_polygon_elem
 
-                    brgy_list_elem = brgy_list[i]
-                    console.log(brgy_list_elem);
+                brgy_list.forEach( (brgy_list_elem) => {
                     let poly_color = '#33CC33';
                     let stroke_color = '#196619';
 
@@ -77,7 +76,7 @@ var riskManagement = {
                             stroke_color = '#196619';
                     }
 
-                    const brgy_polygon_elem = new google.maps.Polygon({
+                    var brgy_polygon_elem = new google.maps.Polygon({
                         paths: brgy_list_elem["political_boundaries"],
                         // strokeColor: "#571818",
                         strokeColor: stroke_color,
@@ -88,10 +87,33 @@ var riskManagement = {
                         // fillOpacity: 0
                     });
 
-                    // riskManagement.brgyBoundariesList.append(brgy_polygon_elem);
-                    brgy_polygon_elem.setMap(riskManagement.riskMap);
+                    brgy_polygon_elem.set("brgy_info", brgy_list_elem)
 
-                };
+                    // riskManagement.brgyBoundariesList.append(brgy_polygon_elem);
+                    google.maps.event.addListener(brgy_polygon_elem, 'click', (e) => {
+
+                        let brgy_modal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
+                            // keyboard: false
+                        });
+
+                        modal_contents = `
+                            <div>
+                                <span>List additional baragay info</span>
+                            </div>
+                        `;
+
+                        // alert(brgy_list_elem['barangay_id'])
+                        // alert('================================')
+                        console.log('test');
+                        console.log(brgy_list_elem);
+                        $("#modalTitle").html(brgy_list_elem['name'])
+                        $("#barangayInfoModal .modal-body").html(modal_contents)
+                        brgy_modal.show();
+                    });
+
+                    brgy_polygon_elem.setMap(riskManagement.riskMap);
+                });
+                
             });
         },
 
@@ -188,6 +210,8 @@ var riskManagement = {
                         let content_info_window_id = "content_window";
                         // console.log(marker_type_label)
 
+                        riskManagement.riskMap.panTo(new_marker.getPosition());
+
                         var str_info_window_contents =`
                         <div class="card-body">
                           <h5 class="card-title">${marker_list_elem['label']}</h5>
@@ -230,7 +254,7 @@ var riskManagement = {
         loadInitMarkers: () => {
             // Loop througout the marker types
             for (const marker_type_key of Object.keys(riskManagement.markerTypes)) {
-                console.log(riskManagement.markerTypes[marker_type_key]);
+                // console.log(riskManagement.markerTypes[marker_type_key]);
                 riskManagement.pullMarkersFromAPI(riskManagement.markerTypes[marker_type_key]);
             }
         },
@@ -250,7 +274,7 @@ var riskManagement = {
         init: () => {
             // load elements during init
             riskManagement.infoModal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
-                keyboard: false
+                // keyboard: false
             });
 
             riskManagement.loadInitMarkers();

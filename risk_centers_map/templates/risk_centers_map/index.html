@@ -28,8 +28,7 @@
 
           <div class="row">
             <div class="col-md-2">
-                content 1
-                <button id="testButton"> Test Button</button>
+                Map Legends and Instructions goes here
             </div>
             <!-- start map col -->
             <div class="col-md-8">
@@ -88,16 +87,16 @@
                     <h5 class="card-header">Barangay</h5>
                     <div class="card-body">
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioBrgyBoundaries" checked>
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioRiskLevel" checked>
+                        <label class="form-check-label" for="radioRiskLevel" >
+                          Risk Level
+                        </label>
+                    </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioBrgyBoundaries" disabled>
                         <label class="form-check-label" for="radioBrgyBoundaries">
                           Barangay Boundaries
                         </label>
-                      </div>
-                      <div class="form-check">
-                          <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioRiskLevel">
-                          <label class="form-check-label" for="radioRiskLevel">
-                            Risk Level
-                          </label>
                       </div>
                     </div>
                   </div>
@@ -116,7 +115,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
+              <h3 id="modalTitle">Modal Title</h3>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

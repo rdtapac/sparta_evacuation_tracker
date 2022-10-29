@@ -44,8 +44,8 @@ class MarkersModel(ParentModel):
                     ON fc.facility_type_id = ft.facility_type_id
             """
 
-            self.db_conn.execute(sql_get_evacuation_markers)
-            rs_markers_rows = self.db_conn.fetchall()
+            self.obj_cursor.execute(sql_get_evacuation_markers)
+            rs_markers_rows = self.obj_cursor.fetchall()
 
             for rs_marker_row in rs_markers_rows:
                 obj_marker_row = {
@@ -103,8 +103,8 @@ class MarkersModel(ParentModel):
                     fc.facility_id NOT IN(SELECT * FROM evacuation_centers_list)
             """                
 
-            self.db_conn.execute(sql_get_facility_markers)
-            rs_markers_rows = self.db_conn.fetchall()
+            self.obj_cursor.execute(sql_get_facility_markers)
+            rs_markers_rows = self.obj_cursor.fetchall()
 
             for rs_marker_row in rs_markers_rows:
                 obj_marker_row = {

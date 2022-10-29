@@ -3,10 +3,12 @@ from django.http import JsonResponse
 
 from .models.boundaries_model import BoundariesModel
 from .models.markers_model import MarkersModel
+from .models.boundaries_helper_model import BoundariesHelperModel
 
 def test_endpoint(self):
 
-    test_model = BoundariesModel()
+    # helper_model = BoundariesHelperModel()
+    # helper_model.populate_barangay_stats()
 
     response = {
         "response": "this is a response from test endpoint"
