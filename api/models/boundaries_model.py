@@ -31,15 +31,21 @@ class BoundariesModel(ParentModel):
                     , "elem_id": "brgy_" + str(rs_brgy_row["barangay_id"])
                     , "name": rs_brgy_row["name"]
                     , "political_boundaries": json.loads(rs_brgy_row["political_boundaries"])
+                    , "alert_status": self.detect_alert_status(rs_brgy_row["barangay_id"])
                 }
 
                 return_result.append(obj_elem)
-                
+
         except Exception as e:
             print('Error encountered:')
             print(e)
 
         return return_result
+
+    def detect_alert_status(self, brgy_id):
+        return_status = 'no_risk'
+        
+        return return_status
 
     def get_city_boundaries(self):
 
