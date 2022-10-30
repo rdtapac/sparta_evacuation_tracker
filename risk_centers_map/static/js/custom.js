@@ -157,7 +157,7 @@ var riskManagement = {
                     switch(marker_storage_key_ref) {
                         case "evacuation_centers":
                             var icon_param = {
-                                url: riskManagement.base_url + "/static/icons/house.png", // url
+                                url: riskManagement.base_url + "/static/icons/gps_pin.png", // url
                                 scaledSize: new google.maps.Size(35, 35), // scaled size
                                 origin: new google.maps.Point(0,0), // origin
                                 anchor: new google.maps.Point(0, 0) // anchor
@@ -174,8 +174,30 @@ var riskManagement = {
                             };
                             break;
                         case "facilities":
+
+                            console.log(marker_list_elem)
+                            facility_icon = '';
+
+                            switch(marker_list_elem["facility_type_id"]) {
+                                case 1: // hospital
+                                    facility_icon = 'hosp_icon.png';
+                                    break;
+                                case 2: // school
+                                    facility_icon = 'educ_icon.png';
+                                    break;
+                                case 4: // airport
+                                    facility_icon = 'airport_icon.png';
+                                    break;
+                                case 7: // barangay hall
+                                    facility_icon = 'govt_icon.png';
+                                    break;
+                                default:
+                                    facility_icon = 'house_pin.png';    
+                            }
+
                             var icon_param = {
-                                url: riskManagement.base_url + "/static/icons/hospital.png", // url
+                                // url: riskManagement.base_url + "/static/icons/hospital.png",  // url
+                                url: riskManagement.base_url + "/static/icons/" + facility_icon, // url
                                 scaledSize: new google.maps.Size(35, 35), // scaled size
                                 origin: new google.maps.Point(0,0), // origin
                                 anchor: new google.maps.Point(0, 0) // anchor
