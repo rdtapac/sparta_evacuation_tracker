@@ -19,7 +19,7 @@ python3 -m pip install -r requirements.txt
 ```
 5. Import the database backup using any DB GUI editor or command line. File location is under client_prototype/risk_centers_map/data_source_files/dump-db_risk_management-202210301815.sql
 6. Adjust the db configuration in django which is located on client_prototype/client_prototype/settings.py
-7. Adjust the GOOGLE_MAPS_API_KEY by replacing it with the value from step 1 (Generate the Google Map API Key) client_prototype/client_prototype/settings.py
+7. Adjust the GOOGLE_MAPS_API_KEY by replacing it with the value from step 1 (Generate the Google Map API Key). The target file is client_prototype/client_prototype/settings.py
 8. Replace the riskManagement.base_url value with your base url root (client_prototype/risk_centers_map/static/js/custom.js)
 9. Go to the client_prototype folder and run the application (reference: [Django Tutorial](https://docs.djangoproject.com/en/4.1/intro/tutorial01/)) using the command:
 ```bash
