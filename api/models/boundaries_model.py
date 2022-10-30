@@ -41,7 +41,7 @@ class BoundariesModel(ParentModel):
 
         try:
             sql_get_city_boundaries = """
-                SELECT barangay_id, name, political_boundaries from barangay
+                SELECT barangay_id, name, political_boundaries, elevation from barangay
             """
 
             self.obj_cursor.execute(sql_get_city_boundaries)
@@ -56,6 +56,7 @@ class BoundariesModel(ParentModel):
                     , "elem_id": "brgy_" + str(rs_brgy_row["barangay_id"])
                     , "name": rs_brgy_row["name"]
                     , "political_boundaries": json.loads(rs_brgy_row["political_boundaries"])
+                    , "elevation": rs_brgy_row["elevation"]
                     , "risk": self.detect_alert_status(rs_brgy_row["barangay_id"])
                 }
 

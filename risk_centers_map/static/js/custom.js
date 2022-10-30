@@ -54,6 +54,7 @@ var riskManagement = {
         },
 
         pullBarangayBoundaries: () => {
+
             $.getJSON(riskManagement.base_url + "/api/boundaries/1", (data, textStatus, jqXHR) => {
                 var brgy_list = data.data;
                 var brgy_polygon_elem
@@ -88,16 +89,21 @@ var riskManagement = {
 
                     // alert(riskManagement.brgyBoundariesList);
 
+
                     riskManagement.brgyBoundariesList.push(brgy_polygon_elem);
                     google.maps.event.addListener(brgy_polygon_elem, 'click', (e) => {
 
-                        let brgy_modal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
-                            // keyboard: false
-                        });
-
+                        var risk_to_upper_case = brgy_list_elem["risk"].charAt(0).toUpperCase() + brgy_list_elem["risk"].slice(1);
                         modal_contents = `
                             <div>
-                                <span>List additional baragay info</span>
+                                <div class="row">
+                                    <div class="col-md-4 h6">Elevation</div>
+                                    <div class="col-md-8">${brgy_list_elem["elevation"]} meters</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 h6">Risk Classification</div>
+                                    <div class="col-md-8">${risk_to_upper_case}</div>
+                                </div>
                             </div>
                         `;
 
@@ -107,12 +113,11 @@ var riskManagement = {
                         console.log(brgy_list_elem);
                         $("#modalTitle").html(brgy_list_elem['name'])
                         $("#barangayInfoModal .modal-body").html(modal_contents)
-                        brgy_modal.show();
+                        riskManagement.infoModal.show();
                     });
 
                     brgy_polygon_elem.setMap(riskManagement.riskMap);
                 });
-                
             });
         },
 
