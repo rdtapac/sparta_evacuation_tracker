@@ -272,7 +272,8 @@ var riskManagement = {
 
                                 let additional_contents = `
                                     <div><b>Status:</b>&nbsp;&nbsp;<span class="badge rounded-pill bg-success">${status_active}</span></div>
-                                    <div><b>Established on:</b>&nbsp;${additional_attr["date_active_start"]}</div>
+                                    <div><b>Days Active:</b>&nbsp;${additional_attr["days_active"]}</div>
+                                    <div><b>Activated on:</b>&nbsp;${additional_attr["date_active_start"]}</div>
                                 `;
                                 $('#infoContents').html(additional_contents);
                             } else {

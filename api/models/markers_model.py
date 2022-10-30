@@ -1,4 +1,5 @@
 from .parent_model import ParentModel
+from datetime import datetime
 import json
 
 class MarkersModel(ParentModel):
@@ -63,12 +64,20 @@ class MarkersModel(ParentModel):
                 JOIN
                     facility_type ft
                     ON fc.facility_type_id = ft.facility_type_id
+                WHERE
+                    ec.date_active_end IS NULL
             """
 
             self.obj_cursor.execute(sql_get_evacuation_markers)
             rs_markers_rows = self.obj_cursor.fetchall()
 
             for rs_marker_row in rs_markers_rows:
+
+                cur_date = datetime.today()
+                start_date = rs_marker_row["ec_date_active_start"]
+                delta_date = cur_date - start_date
+                days_diff = delta_date.days if(delta_date.days > 0) else 1
+
                 obj_marker_row = {
                     "marker_id": rs_marker_row["ec_evacuation_center_id"]
                     , "label": rs_marker_row["fc_name"]
@@ -80,8 +89,9 @@ class MarkersModel(ParentModel):
                     , "facility_type_label": rs_marker_row["ft_facility_type_label"]
                     , "additional_attributes": {
                         "facility_id": rs_marker_row["ec_facility_id"]
-                        , "date_active_start": rs_marker_row["ec_date_active_start"]
-                        , "date_active_end": rs_marker_row["ec_date_active_end"]
+                        , "date_active_start": rs_marker_row["ec_date_active_start"].strftime("%m-%d-%y %H:%M:%S %p")
+                        , "date_active_end": rs_marker_row["ec_date_active_end"].strftime("%m-%d-%y %H:%M:%S %p") if(rs_marker_row["ec_date_active_end"]) else ''
+                        , "days_active": days_diff
                         , "is_evacuation_center": True
                     }
                 }
