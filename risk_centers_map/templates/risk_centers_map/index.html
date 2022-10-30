@@ -21,15 +21,42 @@
                   <h1>Evacuation Center Tracker</h1>
               </div>
               <div class="col-md-4">
-                <p class="align-middle">
-                  <span id="warningLabel" class="badge rounded-pill bg-warning text-dark align-middle">Typhoon Imminent</span>
-                </p>
               </div>
           </div>
 
           <div class="row">
             <div class="col-md-2">
-                Map Legends and Instructions goes here
+                <!-- start overview panel -->
+                <div class="card">
+                  <h5 class="card-header">Overview</h5>
+                  <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-5 h6">
+                          Forecast:
+                        </div>
+                        <div class="col-md-7">
+                          <span id="warningLabel" class="badge rounded-pill bg-primary">Clear Weather</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8 h6">
+                          Total Facilities:
+                        </div>
+                        <div class="col-md-4">
+                          <span class="badge rounded-pill bg-primary" id="overviewTotalFacilities">0</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-8 h6">
+                          Total Active Evacuation Centers:
+                        </div>
+                        <div class="col-md-4">
+                          <span class="badge rounded-pill bg-success" id="overviewTotalEvacuationCenters">0</span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <!-- end overview panel -->
             </div>
             <!-- start map col -->
             <div class="col-md-8">
@@ -99,6 +126,61 @@
                 </div>
               </div>
               <!-- end barangay row -->
+
+              <!-- start legends row -->
+              <div class="row">
+                <div class="col-md-12">
+                  <!-- start legends controls -->
+                  <div class="card">
+                    <h5 class="card-header">Map Pin Legends</h5>
+                    <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-2">
+                            <img class="icon-legend-image" src="{% static 'icons/gps_icon.png' %}" alt="Evacuation Center Icon">
+                          </div>
+                          <div class="col-md-10">
+                            Evacuation Centers  
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-2">
+                            <img class="icon-legend-image" src="{% static 'icons/hosp_icon.png' %}" alt="Hospital Icon">
+                          </div>
+                          <div class="col-md-10">
+                            Hospital
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-2">
+                            <img class="icon-legend-image" src="{% static 'icons/educ_icon.png' %}" alt="School Icon">
+                          </div>
+                          <div class="col-md-10">
+                            Schools
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-2">
+                            <img class="icon-legend-image" src="{% static 'icons/airport_icon.png' %}" alt="Airport Icon">
+                          </div>
+                          <div class="col-md-10">
+                            Airport
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-2">
+                            <img class="icon-legend-image" src="{% static 'icons/govt_icon.png' %}" alt="School Icon">
+                          </div>
+                          <div class="col-md-10">
+                            Barangay Center
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                  <!-- end legends controls -->
+              </div>
+              <!-- end legends row -->
+
             </div>
             <!-- end nav col -->
         </div>

@@ -140,6 +140,7 @@ var riskManagement = {
                 let markers_list_data = data.data;
                 let marker_storage_key_ref = riskManagement.returnMarkerArrayKeyElem(marker_type_id)
                 let label_style = 'bg-primary';
+                let overviewTargetElemId = null;
 
                 // Loop througout the markers current row dataset
                 markers_list_data.forEach( (marker_list_elem) => {
@@ -148,13 +149,14 @@ var riskManagement = {
                     switch(marker_storage_key_ref) {
                         case "evacuation_centers":
                             var icon_param = {
-                                url: riskManagement.base_url + "/static/icons/gps_pin.png", // url
+                                url: riskManagement.base_url + "/static/icons/gps_icon.png", // url
                                 scaledSize: new google.maps.Size(35, 35), // scaled size
                                 origin: new google.maps.Point(0,0), // origin
                                 anchor: new google.maps.Point(0, 0) // anchor
                             };
                             label_style = 'bg-danger';
                             marker_type_label = "Evacuation Center";
+                            overviewTargetElemId = 'overviewTotalEvacuationCenters';
                             break;
                         case "pickup_points":
                             var icon_param = {
@@ -167,6 +169,7 @@ var riskManagement = {
                         case "facilities":
                             // console.log(marker_list_elem)
                             facility_icon = '';
+                            overviewTargetElemId = 'overviewTotalFacilities';
 
                             switch(marker_list_elem["facility_type_id"]) {
                                 case 1: // hospital
@@ -210,6 +213,9 @@ var riskManagement = {
 
                     // console.log("marker type id: " + marker_type_id);
                     // console.log("marker id:   " + marker_list_elem["id"]);
+                    if ($('#'+overviewTargetElemId)) {
+                        $('#'+overviewTargetElemId).text(markers_list_data.length);
+                    }
 
                     // Create info window content
                     google.maps.InfoWindow.prototype.opened = false;
