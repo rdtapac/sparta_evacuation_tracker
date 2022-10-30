@@ -5,11 +5,24 @@ import json
 
 class BoundariesHelperModel(ParentModel):
 
+    """Class constructor
+
+    Args:
+        None
+    Returns:
+        None
+    """
     def __init__(self) -> None:
         super().__init__()
         print("boundaries helper model instantiated")
 
+    """Get barangay list from barangay table
 
+    Args:
+        None
+    Returns:
+        List of resultset objects
+    """
     def get_existing_barangay_list(self):
         existing_brgy_list = []
         sql_get_existing_brgy = """
@@ -35,6 +48,13 @@ class BoundariesHelperModel(ParentModel):
         
         return existing_brgy_list
 
+    """Populate barangay rows
+
+    Args:
+        None
+    Returns:
+        List of resultset objects
+    """
     def populate_barangay_rows(self):
 
         df_path = "/home/ralph/Development/prototype/client_prototype/risk_centers_map/data_source_files/brgy_list.json"
@@ -90,6 +110,13 @@ class BoundariesHelperModel(ParentModel):
                 except Exception as e:
                     print(e)
 
+    """Populate barangay stats
+
+    Args:
+        None
+    Returns:
+        List of resultset objects
+    """
     def populate_barangay_stats(self):
 
         existing_barangay_list = self.get_existing_barangay_list()

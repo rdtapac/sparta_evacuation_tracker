@@ -3,11 +3,25 @@ import json
 
 class MarkersModel(ParentModel):
 
+    """Constructor
+
+    Args:
+        None
+    Returns:
+        None
+    """
     def __init__(self) -> None:
         super().__init__()
         print("markers model instantiated")
         return
 
+    """Get Markers
+
+    Args:
+        marker_type: marker type flag
+    Returns:
+        list of marker objects
+    """
     def get_markers(self, marker_type = 0):
         if marker_type == 0:
             return self.get_evacuation_centers()
@@ -16,6 +30,13 @@ class MarkersModel(ParentModel):
         else:
             return []
 
+    """Get evacuation center markers
+
+    Args:
+        None
+    Returns:
+        list of evacuation center marker objects
+    """
     def get_evacuation_centers(self):
         return_result = []
 
@@ -74,7 +95,13 @@ class MarkersModel(ParentModel):
             print("Error encountered in markers model (evacuation center)")
             print(e)
 
+    """Get facilities markers
 
+    Args:
+        None
+    Returns:
+        list of facilities marker objects
+    """
     def get_facilities(self):
         return_result = []
 

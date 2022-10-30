@@ -85,6 +85,8 @@ DB_NAME="db_risk_management"
 DB_PASSWORD="P@ssw0rd"
 DB_PORT=5432
 
+GOOGLE_MAPS_API_KEY="AIzaSyCS2k5YbyvP65e_ck2FdnbSD-lPknqvl8o"
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',

@@ -3,16 +3,39 @@ import json
 
 class BoundariesModel(ParentModel):
 
+    """Constructor
+    Args:
+        None
+    Returns:
+        None
+    """
     def __init__(self) -> None:
         super().__init__()
         print("boundaries model instantiated")
 
+    """ Get boundaries
+
+    Args:
+        boundary_type: boundary type flag if city or barangay
+    Returns:
+        list of boundary objects
+
+    """
     def get_boundaries(self, boundary_type = 0):
         if boundary_type == 0:
             return self.get_city_boundaries()
         else:
             return self.get_barangay_boundaries()
 
+
+    """Get barangay boundaries
+
+    Args:
+        None
+    Returns:
+        list of barangay objects
+
+    """
     def get_barangay_boundaries(self):
         return_result = []
 
@@ -46,6 +69,14 @@ class BoundariesModel(ParentModel):
 
         return return_result
 
+    """Detect alert status
+
+    Args:
+        brgy_id: barangay id for search condition
+    Returns:
+        string categorization of risk level
+
+    """
     def detect_alert_status(self, brgy_id):
         return_status = 'low'
 
@@ -71,7 +102,6 @@ class BoundariesModel(ParentModel):
 
             print(type(norm_num_exp_flooding_pct))
             print(norm_num_exp_flooding_pct)
-            a = 1
 
             if norm_num_exp_flooding_pct > 50:
                 print('test')
@@ -87,6 +117,14 @@ class BoundariesModel(ParentModel):
         
         return return_status
 
+    """Get City Boundaries
+
+    Args:
+        None
+    Returns:
+        Dictionary object of cauayan city data
+
+    """
     def get_city_boundaries(self):
 
         return_result = []
