@@ -98,15 +98,16 @@ class BoundariesModel(ParentModel):
             if rs_brgy_row is None:
                 return return_status
 
-            norm_num_exp_flooding_pct = rs_brgy_row['prop_exp_flooding']
+            num_exp_flooding = rs_brgy_row['num_exp_flooding']
 
-            print(type(norm_num_exp_flooding_pct))
-            print(norm_num_exp_flooding_pct)
+            # print(type(num_exp_flooding))
+            # print(num_exp_flooding)
+            # base formula on model: 2.718^(0.20*Number  of Households who experienced more frequent flooding + 1.543)
+            compute_risk_value = 2.718 ** (0.20*rs_brgy_row['num_exp_flooding']+1.543)
 
-            if norm_num_exp_flooding_pct > 50:
-                print('test')
+            if compute_risk_value > 78:
                 return_status = 'high'
-            elif norm_num_exp_flooding_pct <= 50 and norm_num_exp_flooding_pct >= 25:
+            elif compute_risk_value <= 78 and compute_risk_value >= 25:
                 return_status = 'medium'
             else:
                 return_status = 'low'
