@@ -106,9 +106,9 @@ class BoundariesModel(ParentModel):
             # base formula on model: 2.718^(0.20*Number  of Households who experienced more frequent flooding + 1.543)
             compute_risk_value = 2.718 ** (0.20*rs_brgy_row['num_exp_flooding']+1.543)
 
-            if compute_risk_value > 78:
+            if compute_risk_value > 90:
                 return_status = 'high'
-            elif compute_risk_value <= 78 and compute_risk_value >= 25:
+            elif compute_risk_value <= 90 and compute_risk_value >= 78:
                 return_status = 'medium'
             else:
                 return_status = 'low'

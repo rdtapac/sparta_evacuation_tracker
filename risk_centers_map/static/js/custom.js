@@ -54,10 +54,13 @@ var riskManagement = {
         },
 
         pullBarangayBoundaries: () => {
+            
+            riskManagement.infoModal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {});
 
             $.getJSON(riskManagement.base_url + "/api/boundaries/1", (data, textStatus, jqXHR) => {
                 var brgy_list = data.data;
-                var brgy_polygon_elem
+                var brgy_polygon_elem = null;
+                var label_style = null;
 
                 brgy_list.forEach( (brgy_list_elem) => {
                     let poly_color = '#33CC33';
@@ -67,14 +70,17 @@ var riskManagement = {
                         case "high":
                             poly_color = '#FF3333';
                             stroke_color = '#B30000';
+                            var label_style = 'bg-danger';
                             break;
                         case "medium":
                             poly_color = '#E6E600';
                             stroke_color = '#FFFF33';
+                            var label_style = 'bg-warning';
                             break;
                         default:
                             poly_color = '#33CC33';
                             stroke_color = '#196619';
+                            var label_style = 'bg-success';
                     }
 
                     var brgy_polygon_elem = new google.maps.Polygon({
@@ -85,14 +91,17 @@ var riskManagement = {
                         fillColor: poly_color,  
                     });
 
-                    brgy_polygon_elem.set("brgy_info", brgy_list_elem)
+                    brgy_polygon_elem.setMap(riskManagement.riskMap);
+                    brgy_polygon_elem.set("poly_id", brgy_list_elem["elem_id"]);
 
                     // alert(riskManagement.brgyBoundariesList);
-
-
                     riskManagement.brgyBoundariesList.push(brgy_polygon_elem);
-                    google.maps.event.addListener(brgy_polygon_elem, 'click', (e) => {
 
+                    console.log('create event');
+                    console.log(label_style + " :: " + brgy_list_elem["elem_id"])
+
+                    
+                    google.maps.event.addListener(brgy_polygon_elem, 'click', (e) => {
                         var risk_to_upper_case = brgy_list_elem["risk"].charAt(0).toUpperCase() + brgy_list_elem["risk"].slice(1);
                         modal_contents = `
                             <div>
@@ -102,7 +111,7 @@ var riskManagement = {
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4 h6">Risk Classification</div>
-                                    <div class="col-md-8">${risk_to_upper_case}</div>
+                                    <div class="col-md-8"><span class="badge ${label_style}">${risk_to_upper_case}</span></div>
                                 </div>
                             </div>
                         `;
@@ -115,8 +124,8 @@ var riskManagement = {
                         $("#barangayInfoModal .modal-body").html(modal_contents)
                         riskManagement.infoModal.show();
                     });
-
-                    brgy_polygon_elem.setMap(riskManagement.riskMap);
+                    
+                    
                 });
             });
         },
@@ -276,14 +285,6 @@ var riskManagement = {
             });
         },
 
-        loadInitMarkers: () => {
-            // Loop througout the marker types
-            for (const marker_type_key of Object.keys(riskManagement.markerTypes)) {
-                // console.log(riskManagement.markerTypes[marker_type_key]);
-                riskManagement.pullMarkersFromAPI(riskManagement.markerTypes[marker_type_key]);
-            }
-        },
-
         removeMarkers: (marker_id) => {
             let marker_array_key = riskManagement.returnMarkerArrayKeyElem(marker_id);
             riskManagement.markersList[marker_array_key].map( (mapMarker) => {
@@ -296,6 +297,14 @@ var riskManagement = {
             let marker_array_key = riskManagement.returnMarkerArrayKeyElem(marker_id);
         },
 
+        loadInitMarkers: () => {
+            // Loop througout the marker types
+            for (const marker_type_key of Object.keys(riskManagement.markerTypes)) {
+                // console.log(riskManagement.markerTypes[marker_type_key]);
+                riskManagement.pullMarkersFromAPI(riskManagement.markerTypes[marker_type_key]);
+            }
+        },
+
         initMap: () => {
             // const center_cauayan_city = {lat: 16.869419, lng: 121.801228};
             const center_cauayan_city = {lat: 16.93434824674571, lng: 121.77511437674198};
@@ -306,18 +315,24 @@ var riskManagement = {
                 // center: cauayan_city
             });
 
-            // Load default map elements
-            riskManagement.pullCityBoundaries();
-            riskManagement.pullBarangayBoundaries();
+            // google.maps.event.addListenerOnce(riskManagement.riskMap, 'idle', function(){
+            //     // do something only the first time the map is loaded
+            //     // Load default map elements
+            //     riskManagement.pullCityBoundaries();
+            //     riskManagement.pullBarangayBoundaries();
+            // });
+
+
         },
 
         init: () => {
             // load elements during init
-            riskManagement.infoModal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
-                // keyboard: false
+            google.maps.event.addListenerOnce(riskManagement.riskMap, 'idle', function(){
+                // do something only the first time the map is loaded
+                riskManagement.pullBarangayBoundaries();
+                riskManagement.loadInitMarkers();
+                riskManagement.pullCityBoundaries();
             });
-
-            riskManagement.loadInitMarkers();
 
             // Set events during init
             $(".map-marker-checkbox").on("click", (e) => {
@@ -341,9 +356,6 @@ var riskManagement = {
             });
 
             $(".map-polygon-checkbox").on("click", (e) => {
-                // riskManagement.brgyBoundariesList.forEach( (elem_boundary)=>{
-                //     elem_boundary.setMap(null);
-                // });
                 if ($(e.target).is(":checked")) {
                     riskManagement.pullBarangayBoundaries();
                 } else {
@@ -353,7 +365,7 @@ var riskManagement = {
         
             $('#testButton').click(()=> {
                 riskManagement.displayBarangayInfo();
-            } )
+            });
         },
 
         displayBarangayInfo: () => {
