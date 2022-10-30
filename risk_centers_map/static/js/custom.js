@@ -78,18 +78,17 @@ var riskManagement = {
 
                     var brgy_polygon_elem = new google.maps.Polygon({
                         paths: brgy_list_elem["political_boundaries"],
-                        // strokeColor: "#571818",
                         strokeColor: stroke_color,
                         strokeOpacity: 1,
                         strokeWeight: 2,
                         fillColor: poly_color,  
-                        // fillColor: "#ddf542",
-                        // fillOpacity: 0
                     });
 
                     brgy_polygon_elem.set("brgy_info", brgy_list_elem)
 
-                    // riskManagement.brgyBoundariesList.append(brgy_polygon_elem);
+                    // alert(riskManagement.brgyBoundariesList);
+
+                    riskManagement.brgyBoundariesList.push(brgy_polygon_elem);
                     google.maps.event.addListener(brgy_polygon_elem, 'click', (e) => {
 
                         let brgy_modal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
@@ -117,19 +116,11 @@ var riskManagement = {
             });
         },
 
-        initMap: () => {
-            // const center_cauayan_city = {lat: 16.869419, lng: 121.801228};
-            const center_cauayan_city = {lat: 16.93434824674571, lng: 121.77511437674198};
-            riskManagement.riskMap = new google.maps.Map(document.getElementById("renderMap"), {
-                zoom:13,
-                center: center_cauayan_city,
-                mapTypeId: "roadmap",
-                // center: cauayan_city
+        removeBoundaries: (marker_id) => {
+            riskManagement.brgyBoundariesList.forEach( (elem_boundary)=>{
+                elem_boundary.setMap(null);
             });
-
-            // Load default map elements
-            riskManagement.pullCityBoundaries();
-            riskManagement.pullBarangayBoundaries();
+            riskManagement.brgyBoundariesList = [];
         },
 
         markerClickEvent: (target_object) => {
@@ -174,8 +165,7 @@ var riskManagement = {
                             };
                             break;
                         case "facilities":
-
-                            console.log(marker_list_elem)
+                            // console.log(marker_list_elem)
                             facility_icon = '';
 
                             switch(marker_list_elem["facility_type_id"]) {
@@ -293,6 +283,21 @@ var riskManagement = {
             let marker_array_key = riskManagement.returnMarkerArrayKeyElem(marker_id);
         },
 
+        initMap: () => {
+            // const center_cauayan_city = {lat: 16.869419, lng: 121.801228};
+            const center_cauayan_city = {lat: 16.93434824674571, lng: 121.77511437674198};
+            riskManagement.riskMap = new google.maps.Map(document.getElementById("renderMap"), {
+                zoom:13,
+                center: center_cauayan_city,
+                mapTypeId: "roadmap",
+                // center: cauayan_city
+            });
+
+            // Load default map elements
+            riskManagement.pullCityBoundaries();
+            riskManagement.pullBarangayBoundaries();
+        },
+
         init: () => {
             // load elements during init
             riskManagement.infoModal = new bootstrap.Modal(document.getElementById('barangayInfoModal'), {
@@ -303,7 +308,6 @@ var riskManagement = {
 
             // Set events during init
             $(".map-marker-checkbox").on("click", (e) => {
-
                 let marker_key_ref_elem = null;
                 let marker_idx_ref_elem = null;
 
@@ -321,7 +325,17 @@ var riskManagement = {
                 } else {
                     riskManagement.removeMarkers(marker_idx_ref_elem);
                 }
+            });
 
+            $(".map-polygon-checkbox").on("click", (e) => {
+                // riskManagement.brgyBoundariesList.forEach( (elem_boundary)=>{
+                //     elem_boundary.setMap(null);
+                // });
+                if ($(e.target).is(":checked")) {
+                    riskManagement.pullBarangayBoundaries();
+                } else {
+                    riskManagement.removeBoundaries();
+                }
             });
         
             $('#testButton').click(()=> {
