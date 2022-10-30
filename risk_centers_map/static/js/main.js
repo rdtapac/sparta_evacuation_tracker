@@ -116,8 +116,6 @@ var riskManagement = {
 
                         // alert(brgy_list_elem['barangay_id'])
                         // alert('================================')
-                        console.log('test');
-                        console.log(brgy_list_elem);
                         $("#modalTitle").html(brgy_list_elem['name'])
                         $("#barangayInfoModal .modal-body").html(modal_contents)
                         riskManagement.infoModal.show();
