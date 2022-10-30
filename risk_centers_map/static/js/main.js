@@ -98,10 +98,6 @@ var riskManagement = {
 
                     // alert(riskManagement.brgyBoundariesList);
                     riskManagement.brgyBoundariesList.push(brgy_polygon_elem);
-
-                    console.log('create event');
-                    console.log(label_style + " :: " + brgy_list_elem["elem_id"])
-
                     
                     google.maps.event.addListener(brgy_polygon_elem, 'click', (e) => {
                         var risk_to_upper_case = brgy_list_elem["risk"].charAt(0).toUpperCase() + brgy_list_elem["risk"].slice(1);
@@ -242,7 +238,6 @@ var riskManagement = {
                     // set marker event
                     new_marker.addListener("click", ()=>{
                         let content_info_window_id = "content_window";
-                        // console.log(marker_type_label)
 
                         riskManagement.riskMap.panTo(new_marker.getPosition());
 
@@ -252,6 +247,7 @@ var riskManagement = {
                           <h6 class="card-subtitle mb-2"><span class="badge ${label_style}">${marker_type_label}</span></h6>
                           <div class="card-text">
                               <div><b>Address:</b>&nbsp;${marker_list_elem["address"]}</div>
+                              <div><b>Facility Type:</b>&nbsp;${marker_list_elem["facility_type_label"]}</div>
                               <div class="content-additional-attributes" id="infoContents"></div>
                           </div>
                         </div>
