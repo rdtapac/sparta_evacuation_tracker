@@ -262,8 +262,6 @@ var riskManagement = {
                                 let additional_attr = marker_list_elem["additional_attributes"];
                                 let status_active = (additional_attr["date_active_end"]) ? 'Not active' : 'Active';
 
-                                console.log(additional_attr)
-
                                 let additional_contents = `
                                     <div><b>Status:</b>&nbsp;&nbsp;<span class="badge rounded-pill bg-success">${status_active}</span></div>
                                     <div><b>Days Active:</b>&nbsp;${additional_attr["days_active"]}</div>
