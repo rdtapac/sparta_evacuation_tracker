@@ -46,7 +46,8 @@ var riskManagement = {
                     strokeOpacity: 0.8,
                     strokeWeight: 3,
                     fillColor: "#FFFF00",
-                    fillOpacity: 0.0
+                    fillOpacity: 0.0,
+                    zIndex: 1
                 });
                 riskManagement.cauayanCityBoundaries = city_political_boundary;
                 city_political_boundary.setMap(riskManagement.riskMap);
@@ -89,6 +90,7 @@ var riskManagement = {
                         strokeOpacity: 1,
                         strokeWeight: 2,
                         fillColor: poly_color,  
+                        zIndex: 2
                     });
 
                     brgy_polygon_elem.setMap(riskManagement.riskMap);
